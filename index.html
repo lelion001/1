@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="ht">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G-Legacy Premium Hub</title>
+    <!-- Ikon Pwofesyonèl FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --royal-blue: #0A2540;
+            --apricot-gold: #FFB81C;
+            --dark-surface: #061626;
+            --card-bg: #103154;
+            --text-light: #F4F6F9;
+            --text-muted: #88A0B8;
+            --success: #10b981;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #030d1a;
+            color: var(--text-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* IPHONE MOCKUP FRAME */
+        .app-container {
+            width: 100%;
+            max-width: 430px;
+            height: 880px;
+            background-color: var(--dark-surface);
+            border: 6px solid var(--apricot-gold);
+            border-radius: 40px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.8);
+        }
+
+        /* STATUS BAR */
+        .status-bar {
+            height: 40px;
+            padding: 0 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            font-weight: 600;
+            background: var(--card-bg);
+            border-bottom: 1px solid rgba(255,184,28,0.1);
+            z-index: 999;
+        }
+
+        /* HEADER */
+        header {
+            padding: 15px 20px;
+            background: var(--card-bg);
+            border-bottom: 1px solid rgba(255,184,28,0.15);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo { font-size: 20px; font-weight: bold; letter-spacing: 1px; }
+        .logo span { color: var(--apricot-gold); }
+        
+        .wallet-badge {
+            border: 1px solid var(--apricot-gold);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            background: rgba(255,184,28,0.05);
+        }
+
+        /* 🌐 SCREEN 0: PAJ CHWAZI LANG (TIKTOK STYLE WELCOME) */
+        #language-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--dark-surface);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            transition: 0.5s ease;
+        }
+
+        .lang-card {
+            width: 100%;
+            padding: 18px;
+            background: var(--card-bg);
+            border: 1px solid rgba(255,184,28,0.2);
+            border-radius: 12px;
+            color: var(--text-light);
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .lang-card:hover {
+            border-color: var(--apricot-gold);
+            background: var(--royal-blue);
+        }
+
+        /* VIEWPORT MAIN CONTENT */
+        .main-viewport {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+            padding-bottom: 95px;
+        }
+        .main-viewport::-webkit-scrollbar { display: none; }
+
+        .page { display: none; animation: fadeIn 0.3s ease; }
+        .page.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 🎥 1. TIKTOK FEED COMPONENT */
+        .post-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255,255,255,0.05);
+            overflow: hidden;
+            position: relative;
+        }
+        .video-player-sim {
+            height: 380px;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        .video-player-sim i.main-play {
+            font-size: 55px;
+            color: var(--apricot-gold);
+            opacity: 0.85;
+        }
+        .sidebar-actions {
+            position: absolute;
+            right: 15px;
+            bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            align-items: center;
+        }
+        .action-btn {
+            width: 48px;
+            height: 48px;
+            background: rgba(10, 37, 64, 0.85);
+            border: 1px solid rgba(255,184,28,0.4);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .action-btn.liked { color: #ff3e6c; border-color: #ff3e6c; }
+
+        .post-info { padding: 15px; background: rgba(6, 22, 38, 0.6); }
+        .post-author { color: var(--apricot-gold); font-weight: bold; font-size: 15px; }
+        .post-text { font-size: 14px; margin-top: 5px; color: var(--text-light); }
+
+        /* KREYASYON POST BOX */
+        .create-post-box {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,184,28,0.1);
+        }
+        .post-textarea {
+            width: 100%;
+            height: 65px;
+            background: var(--royal-blue);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: white;
+            padding: 10px;
+            resize: none;
+            outline: none;
+            font-size: 14px;
+        }
+        .post-textarea:focus { border-color: var(--apricot-gold); }
+
+        /* 💬 2. SISTÈM GWOUP (TELEGRAM STYLE) */
+        .group-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .chat-container {
+            background: var(--royal-blue);
+            border-radius: 16px;
+            height: 320px;
+            padding: 15px;
+            overflow-y: auto;
+            border: 1px solid rgba(255,184,28,0.1);
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .chat-bubble {
+            padding: 10px 14px;
+            border-radius: 12px;
+            max-width: 80%;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        .chat-bubble.me {
+            background: var(--apricot-gold);
+            color: var(--royal-blue);
+            align-self: flex-end;
+            font-weight: 500;
+        }
+        .chat-bubble.other {
+            background: var(--card-bg);
+            color: var(--text-light);
+            align-self: flex-start;
+        }
+        .chat-sender {
+            font-size: 11px;
+            display: block;
+            margin-bottom: 20px;
+            color: var(--text-muted);
+        }
+
+        /* 🎡 3. SEKSYON JWÈT */
+        .wheel-wrapper {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            border: 1px solid rgba(255,184,28,0.1);
+        }
+        .spin-wheel {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 6px solid var(--apricot-gold);
+            margin: 20px auto;
+            background: conic-gradient(var(--royal-blue) 0deg 90deg, var(--card-bg) 90deg 180deg, var(--apricot-gold) 180deg 270deg, #1d4ed8 270deg 360deg);
+            transition: transform 3s cubic-bezier(0.1, 0.8, 0.3, 1);
+        }
+
+        /* INPUTS & FILTERS */
+        .input-premium {
+            flex-grow: 1;
+            padding: 12px;
+            background: var(--royal-blue);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: white;
+            outline: none;
+        }
+        .input-premium:focus { border-color: var(--apricot-gold); }
+
+        .btn-premium {
+            background: var(--apricot-gold);
+            color: var(--royal-blue);
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-premium:active { transform: scale(0.97); }
+
+        /* BOTTOM NAVIGATION BAR */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 75px;
+            background: var(--card-bg);
+            border-top: 1px solid rgba(255,184,28,0.2);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: 10px;
+            z-index: 99;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-muted);
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .nav-item i { font-size: 22px; margin-bottom: 4px; }
+        .nav-item.active { color: var(--apricot-gold); }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- STATUS BAR -->
+        <div class="status-bar">
+            <div id="live-time">12:00 🌐</div>
+            <div>
+                <i class="fa-solid fa-signal"></i>
+                <i class="fa-solid fa-battery-full" style="color:var(--success); margin-left:5px;"></i>
+            </div>
+        </div>
+
+        <!-- 🌐 SCREEN 0: CHWAZI LANG (BLOKE PAJ LAN JOUK MOUN LAN KLOKE) -->
+        <div id="language-screen">
+            <i class="fa-solid fa-globe" style="font-size: 50px; color: var(--apricot-gold); margin-bottom: 25px;"></i>
+            <h2 style="margin-bottom: 30px; text-align: center; font-weight: 800;">CHOOSE LANGUAGE<br><span style="color:var(--apricot-gold); font-size:16px;">G-LEGACY PLATFORM</span></h2>
+            
+            <div class="lang-card" onclick="selectLanguage('ht')">🇭🇹 Kreyòl Ayisyen</div>
+            <div class="lang-card" onclick="selectLanguage('fr')">🇫🇷 Français</div>
+            <div class="lang-card" onclick="selectLanguage('en')">🇺🇸 English</div>
+        </div>
+
+        <!-- MAIN HEADER -->
+        <header>
+            <div class="logo">G-<span>LEGACY</span></div>
+            <div class="wallet-badge">
+                <i class="fa-solid fa-coins" style="color:var(--apricot-gold)"></i> <span id="coins-display">120</span> C
+            </div>
+        </header>
+
+        <!-- MAIN VIEWPORT FOR PAGES -->
+        <div class="main-viewport">
+
+            <!-- ================= PAGE 1: TIKTOK FEED ================= -->
+            <div id="page-feed" class="page active">
+                <!-- Kreyasyon Pòs -->
+                <div class="create-post-box">
+                    <textarea id="newPostText" class="post-textarea" placeholder="Ekri yon mesaj pou w pibliye sou feed la..."></textarea>
+                    <div style="display:flex; justify-content: flex-end; margin-top: 10px;">
+                        <button class="btn-premium" style="padding: 7px 18px; font-size: 13px;" onclick="addCustomPost()">Pibliye</button>
+                    </div>
+                </div>
+
+                <!-- Lis Pòs yo -->
+                <div id="feed-list">
+                    <!-- Pòs 1 -->
+                    <div class="post-card">
+                        <div class="video-player-sim">
+                            <i class="fa-solid fa-circle-play main-play"></i>
+                            <div class="sidebar-actions">
+                                <div class="action-btn" onclick="toggleLike(this)"><i class="fa-solid fa-heart"></i></div>
+                                <div class="action-btn" onclick="sendGift()"><i class="fa-solid fa-gift" style="color:var(--apricot-gold)"></i></div>
+                            </div>
+                        </div>
+                        <div class="post-info">
+                            <div class="post-author">@g_legacy_official</div>
+                            <div class="post-text">Byenveni sou nouvo platfòm pwofesyonèl la. Tout sistèm yo pare pou fonksyone.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= PAGE 2: GWOUP DISKISYON ================= -->
+            <div id="page-groups" class="page">
+                <h3 style="margin-bottom: 5px;">Kominote & Gwoup</h3>
+                <p style="color:var(--text-muted); font-size:13px; margin-bottom:15px;">Kreye yon nouvo gwoup oswa antre nan chat la dirèkteman.</p>
+                
+                <div class="group-selector">
+                    <input type="text" id="newGroupName" class="input-premium" placeholder="Non gwoup la...">
+                    <button class="btn-premium" onclick="initiateNewGroup()">Kreye Gwoup</button>
+                </div>
+
+                <!-- Chat Box Zòn -->
+                <div id="chat-section-box">
+                    <h4 id="active-group-title" style="color:var(--apricot-gold); margin-bottom:10px;">Gwoup: Jeneral</h4>
+                    <div class="chat-container" id="chatAreaMessages">
+                        <div class="chat-bubble other">Byenveni nan gwoup sa a! Nou ka diskite biznis isit la.<span class="chat-sender">Sistèm</span></div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="groupMessageInput" class="input-premium" placeholder="Tape mesaj ou la...">
+                        <button class="btn-premium" onclick="pushGroupMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= PAGE 3: SEKSYON JWÈT ================= -->
+            <div id="page-games" class="page">
+                <h3 style="margin-bottom: 5px;">Seksyon Jwèt</h3>
+                <p style="color:var(--text-muted); font-size:13px; margin-bottom:20px;">Vire woulèt la pou w rasanble plis pwen.</p>
+                
+                <div class="wheel-wrapper">
+                    <h4 style="color:var(--apricot-gold);">🎡 G-Wheel Premium</h4>
+                    <div class="spin-wheel" id="wheelObject"></div>
+                    <button class="btn-premium" style="width:100%; margin-top:10px;" onclick="spinWheelAction()">Vire Woulèt (Koute 10 Coins)</button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- BOTTOM NAV BAR -->
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="switchPage('page-feed', this)"><i class="fa-solid fa-clapperboard"></i>Feed</div>
+            <div class="nav-item" onclick="switchPage('page-groups', this)"><i class="fa-solid fa-comments"></i>Gwoup</div>
+            <div class="nav-item" onclick="switchPage('page-games', this)"><i class="fa-solid fa-gamepad"></i>Jwèt</div>
+        </div>
+
+    </div>
+
+    <!-- TOUT PWOGRAMASYON AN DIREK (OKENN SEVE ANKÒ) -->
+    <script>
+        let userData = { coins: 120, currentLang: 'ht' };
+
+        // 1. SISTÈM SELEKSYON LANG K AP DEBLOKE APLIKASYON AN
+        function selectLanguage(lang) {
+            userData.currentLang = lang;
+            
+            // Animasyon kache ekran lang lan
+            const screen = document.getElementById('language-screen');
+            screen.style.opacity = '0';
+            setTimeout(() => {
+                screen.style.display = 'none';
+            }, 500);
+
+            // Chanje tèks yo selon lang lan si sa nesesè
+            if(lang === 'fr') {
+                document.querySelector('.logo').innerHTML = "G-<span>LEGACY</span>";
+            }
+        }
+
+        // 2. NAVIGASYON PAJ YO
+        function switchPage(pageId, element) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
+            document.getElementById(pageId).classList.add('active');
+            element.classList.add('active');
+        }
+
+        // 3. TIKTOK FEED FUNCTIONALITIES
+        function addCustomPost() {
+            const text = document.getElementById('newPostText').value.trim();
+            if(!text) return;
+
+            const feedList = document.getElementById('feed-list');
+            const newCard = document.createElement('div');
+            newCard.className = 'post-card';
+            newCard.innerHTML = `
+                <div class="video-player-sim">
+                    <i class="fa-solid fa-circle-play main-play"></i>
+                    <div class="sidebar-actions">
+                        <div class="action-btn" onclick="toggleLike(this)"><i class="fa-solid fa-heart"></i></div>
+                        <div class="action-btn" onclick="sendGift()"><i class="fa-solid fa-gift" style="color:var(--apricot-gold)"></i></div>
+                    </div>
+                </div>
+                <div class="post-info">
+                    <div class="post-author">@user_premium</div>
+                    <div class="post-text">${text}</div>
+                </div>
+            `;
+            feedList.prepend(newCard);
+            document.getElementById('newPostText').value = '';
+            
+            userData.coins += 10; // Touche pwen pou aktivite
+            updateCoinsUI();
+        }
+
+        function toggleLike(element) {
+            element.classList.toggle('liked');
+        }
+
+        function sendGift() {
+            if(userData.coins < 15) {
+                alert("Coins ou yo pa ase pou voye kado.");
+                return;
+            }
+            userData.coins -= 15;
+            updateCoinsUI();
+            alert("Ou voye yon kado pwofesyonèl avèk siksè!");
+        }
+
+        // 4. SISTÈM GWOUP (TELEGRAM STYLE INLINE)
+        function initiateNewGroup() {
+            const name = document.getElementById('newGroupName').value.trim();
+            if(!name) return;
+
+            document.getElementById('active-group-title').innerText = "Gwoup: " + name;
+            document.getElementById('chatAreaMessages').innerHTML = `
+                <div class="chat-bubble other">Siksè! Yo kreye gwoup "${name}" lan. Ou ka kòmanse ekri kounye a.<span class="chat-sender">Sistèm</span></div>
+            `;
+            document.getElementById('newGroupName').value = '';
+        }
+
+        function pushGroupMessage() {
+            const msg = document.getElementById('groupMessageInput').value.trim();
+            if(!msg) return;
+
+            const chatArea = document.getElementById('chatAreaMessages');
+            
+            // Mesaj pa ou
+            const myBubble = document.createElement('div');
+            myBubble.className = 'chat-bubble me';
+            myBubble.innerText = msg;
+            chatArea.appendChild(myBubble);
+
+            document.getElementById('groupMessageInput').value = '';
+            chatArea.scrollTop = chatArea.scrollHeight;
+
+            // Repons otomatik sèvè a (Simulation pwofesyonèl)
+            setTimeout(() => {
+                const responseBubble = document.createElement('div');
+                responseBubble.className = 'chat-bubble other';
+                responseBubble.innerHTML = `Mesaj ou an byen resevwa sou rezo G-Legacy a.<span class="chat-sender">Sistèm Sekirite</span>`;
+                chatArea.appendChild(responseBubble);
+                chatArea.scrollTop = chatArea.scrollHeight;
+            }, 1000);
+        }
+
+        // 5. JWÈT WOULÈT ANIMASYON CSS REYÈL
+        function spinWheelAction() {
+            if(userData.coins < 10) {
+                alert("Ou pa gen ase Coins.");
+                return;
+            }
+            userData.coins -= 10;
+            updateCoinsUI();
+
+            const wheel = document.getElementById('wheelObject');
+            const randomDeg = Math.floor(Math.random() * 360) + 1800; // Fè l vire plizyè fwa
+            wheel.style.transform = `rotate(${randomDeg}deg)`;
+
+            setTimeout(() => {
+                const pointsWon = [20, 40, 0, 100, 10];
+                const finalResult = pointsWon[Math.floor(Math.random() * pointsWon.length)];
+                userData.coins += finalResult;
+                updateCoinsUI();
+                alert(`Woulèt la kanpe! Ou genyen: ${finalResult} Coins!`);
+            }, 3000);
+        }
+
+        function updateCoinsUI() {
+            document.getElementById('coins-display').innerText = userData.coins;
+        }
+
+        // 6. METE LÈ A AN TAN REYÈL
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('live-time').innerText = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) + " 🇭🇹";
+        }, 1000);
+    </script>
+</body>
+  </html>
